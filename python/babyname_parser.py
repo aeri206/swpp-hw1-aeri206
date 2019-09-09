@@ -11,6 +11,7 @@
 
 import sys
 import re
+import os
 
 """Baby Names exercise
 
@@ -50,6 +51,11 @@ def check_filename_existence(func):
         BabynameFileNotFoundException: if there is no such file named as the first argument of the function to decorate.
     """
     # TODO: Implement this decorator.
+    def checkFileExists(self, filename):
+        if not os.path.exists(filename):
+            raise BabynameFileNotFoundException("No such babyname file or directory: {0}".format(filename))
+        return func(self, filename)
+    return checkFileExists
 
 
 class BabynameParser:
@@ -64,8 +70,10 @@ class BabynameParser:
         Args:
             filename: The filename to parse.
         """
-
-        text = "File is not read yet"  # TODO: Open and read the given file.
+        # TODO: Open and read the given file.
+        file = open(filename, "r")
+        text = file.read()
+        file.close()  
         # Could process the file line-by-line, but regex on the whole text at once is even easier.
 
         # The year extracting code is provided. Implement the tuple extracting code by using this.
@@ -78,11 +86,13 @@ class BabynameParser:
 
         # Extract all the data tuples with a findall()
         # each tuple is: (rank, male-name, female-name)
-        self.rank_to_names_tuples = []  # TODO: Extract the list of rank to names tuples.
+        self.rank_to_names_tuples = re.findall(r'<td>(\d+)</td><td>([a-zA-Z]+)</td><td>([a-zA-Z]+)</td>', text)
+        
+        # TODO: Extract the list of rank to names tuples.
 
     def parse(self, parsing_lambda):
         """
-        Collects a list of babynames parsed from the (rank, male-name, female-name) tuples.
+        Collects a list of babynames parsed from the (rank, male-name, female-name) tuples. 
         The list must contains all results processed with the given lambda.
 
         Args:
@@ -91,4 +101,5 @@ class BabynameParser:
         Returns:
             The list of parsed babynames.
         """
+        return (list(map(parsing_lambda, self.rank_to_names_tuples)))
         # TODO: Implement this method.
