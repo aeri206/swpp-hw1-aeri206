@@ -76,13 +76,13 @@ class Form {
     email: email => {
       const splitMail = email.split("@");
       if (splitMail.length !== 2) return true;
-      const user_name = splitMail[0]
+      const user_name = splitMail[0];
       if (user_name.includes(" ") || user_name.replace(/\s/gi, "").length === 0) return true;
       const domain = splitMail[1];
       const splitDomain = domain.split(".");
       if (splitDomain.length !== 2) return true;
       if (splitDomain[0].includes(" ") || splitDomain[0].replace(/\s/gi, "").length === 0) return true;
-      return (!/^[a-z]{2,3}$/.test(splitDomain[1]));
+      return (!/^[a-zA-Z]{2,3}$/.test(splitDomain[1]));
     },
     pwd: pwd => {
       if (pwd.length < 8) return true;
@@ -101,10 +101,13 @@ class Form {
     age: age => (age < 0 || age > 200 || isNaN(parseInt(age))),
     b_month: month => !MONTH.includes(month),
     b_day: day => {
-      const regDay = new RegExp("^[0-9]{1,2}$");
-      return (!regDay.test(day));
+      const parsed = parseInt(day);
+      return (isNaN(parsed) || parsed < 0 || parsed > 99);
     },
-    b_year: year => (year < 1800 || year > 2018)
+    b_year: year => {
+      const parsed = parseInt(year);
+      return (isNaN(parsed) || parsed < 1800 || parsed > 2018);
+    }
   };
 
   const toggleLabel = (id, ok) => {
